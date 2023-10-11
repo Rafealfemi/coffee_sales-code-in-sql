@@ -1,0 +1,71 @@
+---CREATE TABLE Coffee_order---
+CREATE TABLE Coffee_order(
+OrderID VARCHAR,
+OrderDate DATE,
+CustomerID VARCHAR,
+ProductID VARCHAR,
+Quantity NUMERIC,
+CustomerName VARCHAR,
+Email VARCHAR,
+Country VARCHAR,
+CoffeeType VARCHAR,
+RoastType  VARCHAR,
+Size VARCHAR,
+UnitPrice MONEY,
+Sales MONEY,
+CoffeetypeName VARCHAR,
+RoastTypeName VARCHAR,
+Loyaltycard VARCHAR
+);
+----IMPORT coffee-order as a csv file----
+COPY coffee_order from 'C:\Users\Public\Documents\coffee_order.csv' delimiter','csv header;
+
+----Total sales of coffee type by country---
+SELECT * FROM coffee_order;
+SELECT country,roasttypename,sum(sales) AS Total_sales
+FROM coffee_order
+GROUP BY country,roasttypename
+ORDER BY Total_sales DESC;
+
+---Total sales by country---
+SELECT country,sum(sales) AS Overall_sales
+FROM coffee_order
+GROUP BY country
+ORDER BY Overall_sales DESC;
+
+---TOP 5 CUSTOMERS BY NAME---
+SELECT CustomerName,country,sum(sales) AS Total_sales
+FROM coffee_order
+GROUP BY country,CustomerName
+ORDER BY  Total_sales DESC
+LIMIT 5;
+
+---COUNTRIES WHERE Loyalty cards are used and the most coffeetype bought with loyaltycard---
+SELECT country,COUNT(Loyaltycard)number_of_loyalty_cards,coffeetypeName,
+SUM(Sales) AS country_sales 
+FROM coffee_order
+WHERE Loyaltycard='Yes'
+GROUP BY country,coffeetypeName
+ORDER BY country_sales DESC;
+
+------COUNTRIES WHERE NO Loyalty cards are used and the most coffeetype bought with  no loyaltycard---
+SELECT country,COUNT(Loyaltycard) AS number_no_of_loyalty_cards,coffeetypeName,
+SUM(Sales) AS country_sales 
+FROM coffee_order
+WHERE Loyaltycard='No'
+GROUP BY country,coffeetypeName
+ORDER BY country_sales DESC;
+
+----Sum of sales of different coffee types by years and country--
+SELECT DATE_PART('YEAR',OrderDate) AS Year_of_order,
+       coffeetypeName,
+       Country,
+       SUM(sales) AS Yearly_sales
+FROM coffee_order
+GROUP BY Year_of_order, coffeetypeName, Country
+ORDER BY DATE_PART('YEAR',OrderDate),Yearly_sales DESC;
+
+
+
+
+
